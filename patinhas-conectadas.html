@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patinhas Conectadas — ONGs reais do Brasil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--cream:#FDFAF5;--white:#fff;--green:#3D7A5C;--gl:#6BAF89;--gp:#EBF5EE;--orange:#F26419;--ol:#FF8C42;--op:#FFF0E8;--brown:#8B5E3C;--td:#1A1A1A;--tm:#4A4A4A;--tl:#888;--border:#E8E0D5;--sh:rgba(26,26,26,.08);--shm:rgba(26,26,26,.14)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--td);overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(253,250,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:68px}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--green);text-decoration:none;display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-logo span{color:var(--orange)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--tm);font-size:.9rem;font-weight:500;transition:color .2s;cursor:pointer}
+.nav-links a:hover{color:var(--green)}
+.nav-cta{background:var(--orange);color:#fff;border:none;border-radius:50px;padding:10px 24px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.nav-cta:hover{background:var(--ol)}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 5% 120px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 40%,rgba(61,122,92,.08) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 20% 70%,rgba(242,100,25,.06) 0%,transparent 60%),var(--cream);z-index:0}
+.hero-blob{position:absolute;right:-10%;top:50%;transform:translateY(-50%);width:clamp(300px,45vw,620px);aspect-ratio:1;border-radius:40% 60% 55% 45%/45% 40% 60% 55%;background:linear-gradient(135deg,var(--gp),rgba(107,175,137,.15));z-index:0;animation:morph 8s ease-in-out infinite}
+@keyframes morph{0%,100%{border-radius:40% 60% 55% 45%/45% 40% 60% 55%}33%{border-radius:55% 45% 40% 60%/60% 55% 45% 40%}66%{border-radius:45% 55% 60% 40%/40% 60% 55% 45%}}
+.hero-content{position:relative;z-index:1;max-width:640px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gp);color:var(--green);border-radius:50px;padding:6px 16px;font-size:.82rem;font-weight:600;margin-bottom:28px;border:1px solid rgba(61,122,92,.15);animation:fadeUp .6s ease both}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,4.2rem);line-height:1.12;font-weight:900;margin-bottom:20px;animation:fadeUp .6s ease .1s both}
+.hero-title em{color:var(--orange);font-style:normal}
+.hero-sub{font-size:1.1rem;color:var(--tm);line-height:1.7;margin-bottom:40px;animation:fadeUp .6s ease .2s both}
+.hero-search{display:flex;background:#fff;border-radius:16px;box-shadow:0 4px 32px var(--shm),0 0 0 1px var(--border);overflow:hidden;animation:fadeUp .6s ease .3s both;margin-bottom:20px}
+.hero-search select,.hero-search input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--td);background:transparent;padding:18px 20px}
+.hero-search select{border-right:1px solid var(--border);min-width:150px;cursor:pointer;color:var(--tm)}
+.hero-search input{flex:1}
+.hero-search input::placeholder{color:var(--tl)}
+.hero-search-btn{background:var(--orange);border:none;color:#fff;padding:18px 28px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;white-space:nowrap}
+.hero-search-btn:hover{background:var(--ol)}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;animation:fadeUp .6s ease .4s both}
+.hero-tag{background:#fff;border:1px solid var(--border);border-radius:50px;padding:6px 16px;font-size:.82rem;color:var(--tm);cursor:pointer;transition:all .2s}
+.hero-tag:hover{border-color:var(--green);color:var(--green)}
+.hero-stats{position:absolute;bottom:48px;left:5%;right:5%;display:flex;gap:40px;z-index:1;animation:fadeUp .6s ease .5s both}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--green);line-height:1}
+.stat-label{font-size:.82rem;color:var(--tl);margin-top:4px}
+.section{padding:80px 5%}
+.sec-label{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--orange);margin-bottom:12px}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;line-height:1.2;margin-bottom:16px}
+.sec-sub{font-size:1rem;color:var(--tm);line-height:1.7;max-width:520px;margin-bottom:48px}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.how-card{background:#fff;border-radius:20px;padding:36px 32px;border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;cursor:pointer}
+.how-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px var(--shm)}
+.how-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.how-card.adopt::before{background:linear-gradient(90deg,var(--green),var(--gl))}
+.how-card.donate::before{background:linear-gradient(90deg,var(--orange),var(--ol))}
+.how-card.vol::before{background:linear-gradient(90deg,var(--brown),#C49A6C)}
+.how-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:20px}
+.how-card.adopt .how-icon{background:var(--gp)}
+.how-card.donate .how-icon{background:var(--op)}
+.how-card.vol .how-icon{background:#FFF5EC}
+.how-card h3{font-size:1.2rem;font-weight:700;margin-bottom:10px}
+.how-card p{font-size:.9rem;color:var(--tm);line-height:1.6;margin-bottom:20px}
+.how-link{font-size:.88rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:gap .2s;cursor:pointer}
+.how-card.adopt .how-link{color:var(--green)}
+.how-card.donate .how-link{color:var(--orange)}
+.how-card.vol .how-link{color:var(--brown)}
+.how-card:hover .how-link{gap:10px}
+.featured{background:#fff;padding:80px 5%}
+.feat-hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px}
+.see-all{color:var(--green);font-weight:600;text-decoration:none;font-size:.9rem;display:flex;align-items:center;gap:6px;cursor:pointer;transition:gap .2s}
+.see-all:hover{gap:10px}
+.ong-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.ong-card{border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--cream);transition:transform .25s,box-shadow .25s;cursor:pointer}
+.ong-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px var(--shm)}
+.card-img-wrap{position:relative}
+.card-img{height:175px;width:100%;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.g1{background:linear-gradient(135deg,#EBF5EE,#D4EDDA)}.g2{background:linear-gradient(135deg,#FFF0E8,#FFE0CC)}
+.g3{background:linear-gradient(135deg,#E8F4FD,#D1EAF9)}.g4{background:linear-gradient(135deg,#FFF8E8,#FFEEBA)}
+.g5{background:linear-gradient(135deg,#F5EEF8,#E8D5F0)}.g6{background:linear-gradient(135deg,#FDECEA,#FADBD8)}
+.card-badge{position:absolute;top:14px;left:14px;background:#fff;border-radius:50px;padding:4px 12px;font-size:.75rem;font-weight:700;color:var(--green);display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.card-body{padding:22px}
+.card-name{font-weight:700;font-size:1rem;margin-bottom:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.vbadge{width:18px;height:18px;background:var(--green);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;flex-shrink:0}
+.card-loc{font-size:.82rem;color:var(--tl);margin-bottom:10px}
+.card-desc{font-size:.87rem;color:var(--tm);line-height:1.5;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.ctag{background:var(--gp);color:var(--green);border-radius:50px;padding:4px 12px;font-size:.75rem;font-weight:600}
+.ctag.or{background:var(--op);color:var(--orange)}
+.card-footer{display:flex;gap:10px}
+.btn-d{background:var(--orange);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;flex:1}
+.btn-d:hover{background:var(--ol)}
+.btn-p{background:transparent;color:var(--green);border:2px solid var(--gp);border-radius:10px;padding:10px 18px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-p:hover{border-color:var(--green);background:var(--gp)}
+.data-banner{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:64px 5%;color:#fff}
+.data-inner{max-width:900px;margin:0 auto;text-align:center}
+.data-inner h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.4rem);font-weight:900;margin-bottom:16px}
+.data-inner p{opacity:.75;font-size:.95rem;line-height:1.7;margin-bottom:48px;max-width:560px;margin-left:auto;margin-right:auto}
+.data-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.dcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:28px 20px;text-align:center}
+.dnum{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#6BAF89;line-height:1;margin-bottom:8px}
+.dlabel{font-size:.82rem;opacity:.7;line-height:1.4}
+.dsrc{font-size:.72rem;opacity:.4;margin-top:4px}
+.urgent-sec{background:var(--green);padding:64px 5%;color:#fff;text-align:center;position:relative;overflow:hidden}
+.urg-label{color:var(--gl);font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.urg-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:900;margin-bottom:16px;line-height:1.2}
+.urg-sub{font-size:1rem;opacity:.85;margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.6}
+.urg-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:40px}
+.uchip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:50px;padding:10px 20px;font-size:.88rem;font-weight:500;display:flex;align-items:center;gap:8px}
+.urg-cta{background:var(--orange);color:#fff;border:none;border-radius:50px;padding:16px 40px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;box-shadow:0 8px 24px rgba(242,100,25,.4)}
+.urg-cta:hover{background:var(--ol);transform:translateY(-2px)}
+.loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;grid-column:1/-1}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:.9rem;color:var(--tl)}
+.err{text-align:center;padding:40px;color:var(--orange);background:var(--op);border-radius:16px;margin:20px 0;grid-column:1/-1}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.active{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:24px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto;padding:40px;position:relative;transform:translateY(20px);transition:transform .3s}
+.modal-overlay.active .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:20px;right:20px;background:var(--border);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.modal-close:hover{background:var(--gp)}
+.p-top{display:flex;gap:20px;align-items:flex-start;margin-bottom:28px}
+.p-avatar{width:80px;height:80px;border-radius:16px;background:var(--gp);font-size:2.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.p-name{font-size:1.3rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.p-loc{font-size:.88rem;color:var(--tl);margin-bottom:10px}
+.p-sec{margin-bottom:22px}
+.p-sec h4{font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--tl);font-weight:700;margin-bottom:8px}
+.p-sec p{font-size:.92rem;color:var(--tm);line-height:1.6}
+.p-actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn-pix{flex:1;background:var(--orange);color:#fff;border:none;border-radius:12px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;min-width:140px}
+.btn-pix:hover{background:var(--ol)}
+.btn-cont{flex:1;background:var(--gp);color:var(--green);border:none;border-radius:12px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;min-width:140px}
+.btn-cont:hover{background:#D4EDDA}
+.pix-box{background:var(--op);border-radius:12px;padding:16px;margin-top:8px}
+.pix-key{font-weight:700;color:var(--orange);word-break:break-all;font-size:1rem}
+.ext-link{color:var(--green);text-decoration:none;font-weight:600;font-size:.9rem}
+.ext-link:hover{text-decoration:underline}
+.form-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:8px}
+.form-sub{color:var(--tl);font-size:.9rem;margin-bottom:28px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:.82rem;font-weight:600;color:var(--tm)}
+.fg input,.fg select,.fg textarea{border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--td);background:var(--cream);transition:border-color .2s;outline:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--green)}
+.fg textarea{min-height:100px;resize:vertical}
+.ani-checks{display:flex;gap:10px;flex-wrap:wrap}
+.ani-check{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer}
+.form-submit{background:var(--green);color:#fff;border:none;border-radius:12px;padding:16px;width:100%;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:20px;transition:background .2s}
+.form-submit:hover{background:var(--gl)}
+.cat-page{display:none;padding-top:68px}
+.cat-hero{background:var(--green);padding:48px 5%;color:#fff;text-align:center}
+.cat-hero h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:8px}
+.cat-hero p{opacity:.8;font-size:.95rem}
+.filters{background:#fff;border-bottom:1px solid var(--border);padding:20px 5%;display:flex;flex-wrap:wrap;gap:14px;align-items:center;position:sticky;top:68px;z-index:50}
+.fsel,.sinput{border:1.5px solid var(--border);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--tm);background:#fff;cursor:pointer;outline:none;transition:border-color .2s}
+.fsel:focus,.sinput:focus{border-color:var(--green)}
+.sinput{color:var(--td);min-width:200px}
+.fcount{font-size:.88rem;color:var(--tl);margin-left:auto}
+footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
+.ftgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.ftlogo{font-family:'Playfair Display',serif;font-size:1.3rem;color:#fff;margin-bottom:14px;display:block}
+.ftlogo span{color:var(--ol)}
+.ftabout{font-size:.88rem;line-height:1.7}
+.ftcol h4{color:#fff;font-size:.88rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.ftcol ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ftcol ul li a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.88rem;transition:color .2s;cursor:pointer}
+.ftcol ul li a:hover{color:#fff}
+.ft-bot{border-top:1px solid rgba(255,255,255,.1);padding-top:28px;display:flex;align-items:center;justify-content:space-between;font-size:.82rem;color:rgba(255,255,255,.4)}
+.ft-heart{color:var(--ol)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.page.hidden{display:none}
+@media(max-width:768px){.how-grid,.data-grid{grid-template-columns:1fr}.ftgrid{grid-template-columns:1fr 1fr}.nav-links{display:none}.hero-stats{gap:20px;flex-wrap:wrap}.hero-blob{display:none}.form-grid{grid-template-columns:1fr}.feat-hdr{flex-direction:column;align-items:flex-start;gap:12px}.p-actions{flex-direction:column}.hero-search{flex-direction:column}.hero-search select{border-right:none;border-bottom:1px solid var(--border)}}
+@media(max-width:480px){.ftgrid{grid-template-columns:1fr}.data-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" onclick="showPage('home')">🐾 Patinhas<span>Conectadas</span></a>
+  <ul class="nav-links">
+    <li><a onclick="showPage('catalog')">Buscar ONGs</a></li>
+    <li><a href="#como-ajudar">Como Ajudar</a></li>
+    <li><a onclick="openModal('regModal')">Para ONGs</a></li>
+  </ul>
+  <button class="nav-cta" onclick="openModal('regModal')">Cadastrar ONG</button>
+</nav>
+
+<!-- HOME -->
+<div id="homePage" class="page">
+  <section class="hero">
+    <div class="hero-bg"></div><div class="hero-blob"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🌱 30 milhões de animais precisam de ajuda no Brasil — OMS</div>
+      <h1 class="hero-title">Encontre quem<br>precisa da sua <em>ajuda.</em></h1>
+      <p class="hero-sub">Conectamos pessoas de bom coração a ONGs <strong>reais</strong> que resgatam, cuidam e reabilitam animais em todo o Brasil. Uma patinha de cada vez.</p>
+      <div class="hero-search">
+        <select id="hEstado"><option value="">📍 Estado</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select>
+        <input type="text" id="hBusca" placeholder="Busque por ONG ou cidade..." onkeydown="if(event.key==='Enter')buscarHero()">
+        <button class="hero-search-btn" onclick="buscarHero()">Buscar 🔍</button>
+      </div>
+      <div class="hero-tags">
+        <span class="hero-tag" onclick="irFiltro('caes')">🐶 Cães</span>
+        <span class="hero-tag" onclick="irFiltro('gatos')">🐱 Gatos</span>
+        <span class="hero-tag" onclick="irFiltro('silvestres')">🦜 Silvestres</span>
+        <span class="hero-tag" onclick="irFiltro('','',true)">✅ Verificadas</span>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">30M+</div><div class="stat-label">animais abandonados no Brasil</div></div>
+      <div class="stat"><div class="stat-num">185mil</div><div class="stat-label">em ONGs agora</div></div>
+      <div class="stat"><div class="stat-num">400+</div><div class="stat-label">ONGs ativas no país</div></div>
+      <div class="stat"><div class="stat-num">Crime</div><div class="stat-label">abandono desde 1998 (Lei 9.605)</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="como-ajudar">
+    <div class="sec-label">Você pode fazer a diferença</div>
+    <h2 class="sec-title">Três caminhos para<br>transformar vidas</h2>
+    <p class="sec-sub">Não importa o quanto você pode oferecer — todo gesto conta.</p>
+    <div class="how-grid">
+      <div class="how-card adopt reveal"><div class="how-icon">🏠</div><h3>Adote</h3><p>Abra sua casa para um animal que só quer dar amor. Encontre cães, gatos e outros bichinhos esperando por você nas ONGs próximas.</p><span class="how-link" onclick="showPage('catalog')">Encontrar animais →</span></div>
+      <div class="how-card donate reveal"><div class="how-icon">💛</div><h3>Doe</h3><p>Ração, remédios, castrações — cada real doado vira cuidado real. Doe diretamente às ONGs verificadas com total transparência.</p><span class="how-link" onclick="showPage('catalog')">Escolher uma ONG →</span></div>
+      <div class="how-card vol reveal"><div class="how-icon">🤝</div><h3>Seja Voluntário</h3><p>Passear, fotografar, fazer transporte, ajudar em feiras de adoção — as ONGs precisam de você também. Seu tempo vale muito.</p><span class="how-link" onclick="showPage('catalog')">Oferecer ajuda →</span></div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="feat-hdr">
+      <div><div class="sec-label">ONGs reais do Brasil</div><h2 class="sec-title">Instituições que precisam<br>de você agora</h2></div>
+      <a class="see-all" onclick="showPage('catalog')">Ver todas →</a>
+    </div>
+    <div id="homeGrid"><div class="ong-grid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Buscando ONGs reais do Brasil...</p></div></div></div>
+  </section>
+
+  <section class="data-banner">
+    <div class="data-inner">
+      <div class="sec-label" style="color:#6BAF89">A dimensão do problema</div>
+      <h2>Números que precisamos<br>encarar juntos</h2>
+      <p>Dados reais de fontes oficiais sobre o abandono animal no Brasil — porque entender o problema é o primeiro passo para resolvê-lo.</p>
+      <div class="data-grid">
+        <div class="dcard"><div class="dnum">30M</div><div class="dlabel">animais abandonados nas ruas</div><div class="dsrc">OMS, 2022</div></div>
+        <div class="dcard"><div class="dnum">4,8M</div><div class="dlabel">em situação de vulnerabilidade</div><div class="dsrc">Instituto Pet Brasil</div></div>
+        <div class="dcard"><div class="dnum">60%</div><div class="dlabel">dos animais em ONGs são vítimas de maus-tratos</div><div class="dsrc">CNN Brasil / IPB</div></div>
+        <div class="dcard"><div class="dnum" style="font-size:1.4rem">2-5 anos</div><div class="dlabel">pena por maus-tratos a cães e gatos</div><div class="dsrc">Lei 14.064/2020</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="urgent-sec">
+    <div class="urg-label">🚨 Necessidade urgente</div>
+    <h2 class="urg-title">Algumas ONGs estão<br>no limite agora</h2>
+    <p class="urg-sub">Elas precisam de ração, medicamentos e insumos com urgência. Qualquer valor faz diferença quando o tempo é curto.</p>
+    <div class="urg-chips">
+      <div class="uchip">🥣 Ração para cães e gatos</div>
+      <div class="uchip">💊 Medicamentos</div>
+      <div class="uchip">✂️ Castrações</div>
+      <div class="uchip">🏥 Atendimento veterinário</div>
+      <div class="uchip">🛏️ Caminhas e cobertores</div>
+    </div>
+    <button class="urg-cta" onclick="showPage('catalog')">Ver ONGs com necessidades urgentes</button>
+  </section>
+</div>
+
+<!-- CATÁLOGO -->
+<div id="catalogPage" class="page cat-page hidden">
+  <div class="cat-hero"><h1>Encontre sua causa 🐾</h1><p>ONGs reais do Brasil — use os filtros para encontrar quem precisa da sua ajuda</p></div>
+  <div class="filters">
+    <input type="text" class="sinput" id="cBusca" placeholder="🔍 Buscar por nome..." oninput="filtrar()">
+    <select class="fsel" id="fEst" onchange="filtrar()"><option value="">📍 Estado</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select>
+    <select class="fsel" id="fAni" onchange="filtrar()"><option value="">🐾 Animais</option><option value="caes">🐶 Cães</option><option value="gatos">🐱 Gatos</option><option value="silvestres">🦜 Silvestres</option></select>
+    <select class="fsel" id="fVer" onchange="filtrar()"><option value="">🔍 Todas</option><option value="1">✅ Verificadas</option></select>
+    <span class="fcount" id="fCount">Carregando...</span>
+  </div>
+  <div style="padding:40px 5%"><div class="ong-grid" id="catGrid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Carregando...</p></div></div></div>
+</div>
+
+<!-- MODAL PERFIL -->
+<div class="modal-overlay" id="profModal">
+  <div class="modal"><button class="modal-close" onclick="closeModal('profModal')">✕</button><div id="profContent"></div></div>
+</div>
+
+<!-- MODAL DOAÇÃO -->
+<div class="modal-overlay" id="donModal">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <button class="modal-close" onclick="closeModal('donModal')">✕</button>
+    <div style="font-size:3rem;margin-bottom:16px">💛</div>
+    <h2 class="form-title">Fazer doação</h2>
+    <p id="donNome" style="color:var(--tl);margin-bottom:24px;font-size:.95rem"></p>
+    <div class="pix-box" style="margin-bottom:20px">
+      <div style="font-size:.75rem;color:var(--tl);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Chave PIX</div>
+      <div class="pix-key" id="donPix"></div>
+      <button onclick="copyPix()" style="background:none;border:none;color:var(--orange);font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;margin-top:8px;font-weight:600">📋 Copiar chave</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--tl);line-height:1.6">100% vai diretamente para a ONG. Guarde o comprovante.</p>
+  </div>
+</div>
+
+<!-- MODAL CADASTRO -->
+<div class="modal-overlay" id="regModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('regModal')">✕</button>
+    <h2 class="form-title">Cadastre sua ONG 🐾</h2>
+    <p class="form-sub">Preencha com atenção. Nossa equipe verificará os dados em até 5 dias úteis.</p>
+    <div class="form-grid">
+      <div class="fg"><label>Nome da ONG *</label><input type="text" id="fn" placeholder="Ex: Instituto Amigos de Patas"></div>
+      <div class="fg"><label>CNPJ *</label><input type="text" id="fc" placeholder="00.000.000/0000-00"></div>
+      <div class="fg"><label>E-mail *</label><input type="email" id="fe" placeholder="contato@suaong.org.br"></div>
+      <div class="fg"><label>WhatsApp</label><input type="text" id="ft" placeholder="(11) 99999-9999"></div>
+      <div class="fg"><label>Estado *</label><select id="fst"><option value="">Selecione...</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select></div>
+      <div class="fg"><label>Cidade *</label><input type="text" id="fci" placeholder="Ex: São Paulo"></div>
+      <div class="fg full"><label>Missão *</label><textarea id="fm" placeholder="Descreva a missão e os valores da sua instituição..."></textarea></div>
+      <div class="fg full"><label>Descrição breve</label><textarea id="fd" placeholder="Um resumo do trabalho (aparece nos cards)..." style="min-height:80px"></textarea></div>
+      <div class="fg full"><label>Animais atendidos *</label>
+        <div class="ani-checks">
+          <label class="ani-check"><input type="checkbox" value="caes"> 🐶 Cães</label>
+          <label class="ani-check"><input type="checkbox" value="gatos"> 🐱 Gatos</label>
+          <label class="ani-check"><input type="checkbox" value="silvestres"> 🦜 Silvestres</label>
+          <label class="ani-check"><input type="checkbox" value="cavalos"> 🐴 Grandes animais</label>
+        </div>
+      </div>
+      <div class="fg full"><label>Chave PIX</label><input type="text" id="fp" placeholder="CNPJ, e-mail ou chave aleatória"></div>
+      <div class="fg"><label>Instagram</label><input type="text" id="fi" placeholder="@suaong"></div>
+      <div class="fg"><label>Site oficial</label><input type="text" id="fs" placeholder="https://suaong.org.br"></div>
+    </div>
+    <button class="form-submit" onclick="cadastrar()">Enviar solicitação de cadastro ✓</button>
+  </div>
+</div>
+
+<footer>
+  <div class="ftgrid">
+    <div><span class="ftlogo">🐾 Patinhas<span>Conectadas</span></span><p class="ftabout">A plataforma que conecta corações dispostos a ajudar com instituições reais que mais precisam. Dados verificados, transparência total.</p></div>
+    <div class="ftcol"><h4>Explorar</h4><ul><li><a onclick="showPage('catalog')">Buscar ONGs</a></li><li><a onclick="irFiltro('caes')">Adotar cães</a></li><li><a onclick="irFiltro('gatos')">Adotar gatos</a></li><li><a onclick="irFiltro('','',true)">Verificadas</a></li></ul></div>
+    <div class="ftcol"><h4>Para ONGs</h4><ul><li><a onclick="openModal('regModal')">Cadastrar ONG</a></li><li><a href="#">Como funciona</a></li></ul></div>
+    <div class="ftcol"><h4>Fontes</h4><ul><li><a href="https://jornal.usp.br/atualidades/abandono-de-animais-segue-alarmante-no-brasil/" target="_blank">USP — Abandono animal</a></li><li><a href="https://institutoamparanimal.org.br" target="_blank">Ampara Animal</a></li><li><a href="https://institutocaramelo.org" target="_blank">Instituto Caramelo</a></li></ul></div>
+  </div>
+  <div class="ft-bot">
+    <span>© 2025 Patinhas Conectadas · Matemática — Semeando Saberes Inspirando Soluções</span>
+    <span>Dados: OMS · Instituto Pet Brasil · CNN Brasil</span>
+  </div>
+</footer>
+
+<script>
+const { createClient } = supabase;
+const db = createClient(
+  'https://weoholirtvdqasvwhaka.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlb2hvbGlydHZkcWFzdndoYWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTg5MDYsImV4cCI6MjA5MDM3NDkwNn0.fFB2oRx6m5r7fGwOQHtoTPnNw92WeJLPDdqh87HRVuY'
+);
+
+const ONGS_SEED = [
+  {nome:"Instituto Ampara Animal",cidade:"São Paulo",estado:"SP",missao:"Maior organização de proteção e defesa animal do Brasil, reconhecida como OSCIP pelo Ministério da Justiça.",descricao:"Fundada em 2010, apoia mais de 450 abrigos com ração, vacinas e atendimento veterinário. Uma das 100 melhores ONGs do país (2019). Trabalha com cães, gatos e animais silvestres.",animais:"caes,gatos,silvestres",instagram:"@institutoamparanimal",chave_pix:"institutoamparanimal.org.br",verificada:true,site:"https://institutoamparanimal.org.br"},
+  {nome:"Instituto Caramelo",cidade:"Ribeirão Pires",estado:"SP",missao:"Defender os direitos dos animais, resgatando e reabilitando cães e gatos vítimas de maus-tratos e abandono.",descricao:"Localizado em Ribeirão Pires (SP). Resgata animais dos casos mais graves de maus-tratos. Todos passam por cuidados veterinários completos antes da adoção.",animais:"caes,gatos",instagram:"@institutocaramelo",chave_pix:"institutocaramelo.org",verificada:true,site:"https://institutocaramelo.org"},
+  {nome:"Paraíso dos Focinhos",cidade:"Rio de Janeiro",estado:"RJ",missao:"Resgatar, proteger, tratar e cuidar dos animais de rua até que encontrem uma família amorosa.",descricao:"Maior ONG de proteção contra maus-tratos do RJ. Mais de 500 animais em três sítios de 7.000m². Possui castramóvel, centro médico e haras. Madrinha: Paolla Oliveira.",animais:"caes,gatos,cavalos",instagram:"@paraisodosfocinhos",chave_pix:"paraisodosfocinhos.com.br",verificada:true,site:"https://www.paraisodosfocinhos.com.br"},
+  {nome:"SUIPA — Soc. União Internacional Protetora dos Animais",cidade:"Rio de Janeiro",estado:"RJ",missao:"Resgatar, cuidar e promover a adoção de animais em abandono e maus-tratos desde 1943.",descricao:"Uma das mais antigas ONGs de proteção animal do Brasil. Possui abrigo próprio e clínica veterinária com atendimento a preços populares para a comunidade.",animais:"caes,gatos",instagram:"@suipa_oficial",chave_pix:"suipa.org.br",verificada:true,site:"https://suipa.org.br"},
+  {nome:"ProAnima — Assoc. Protetora dos Animais DF",cidade:"Brasília",estado:"DF",missao:"Atuar em Ativismo, Política Pública, Educação e Proteção em prol de todas as espécies animais.",descricao:"Desde 2003, atua por voluntariado em Brasília, defendendo animais domésticos, silvestres e de zoológicos. Foco em políticas públicas e educação ambiental.",animais:"caes,gatos,silvestres,cavalos",instagram:"@proanima_df",chave_pix:"proanima.org.br",verificada:true,site:""},
+  {nome:"Cão Sem Dono",cidade:"São Paulo",estado:"SP",missao:"Apoiar protetores independentes com alimentação e cuidados de saúde para animais abandonados.",descricao:"Desde 2004, apoia uma rede de protetores em São Paulo com ração e suporte veterinário. Modelo descentralizado que amplifica o alcance da proteção animal.",animais:"caes,gatos",instagram:"@caosemdono_sp",chave_pix:"caosemdono.org.br",verificada:true,site:"https://caosemdono.org.br"},
+  {nome:"Gatópoles",cidade:"São Paulo",estado:"SP",missao:"Resgatar, acolher e promover a doação responsável de gatos na cidade de São Paulo.",descricao:"Atuando desde 2013, possui abrigo próprio e financia seus trabalhos por apadrinhamentos e eventos. Referência no cuidado felino em São Paulo.",animais:"gatos",instagram:"@gatopoles",chave_pix:"gatopoles@gmail.com",verificada:true,site:""},
+  {nome:"ASPAAN — Assoc. de Proteção Animal de Goiânia",cidade:"Goiânia",estado:"GO",missao:"Conscientizar sobre posse responsável e proteger animais contra maus-tratos em Goiânia.",descricao:"Formada por voluntários, atua há mais de 12 anos em Goiânia. Possui casa de acolhida para animais de abandono e maus-tratos aguardando adoção.",animais:"caes,gatos",instagram:"@aspaan_go",chave_pix:"aspaan.org.br",verificada:true,site:""},
+  {nome:"101 Vira-Latas",cidade:"Viamão",estado:"RS",missao:"Resgatar e promover a adoção responsável de animais, buscando um lar amoroso para cada um deles.",descricao:"ONG gaúcha atuante desde 2004 na região metropolitana de Porto Alegre. Mantém brechós dedicados aos animais em Viamão e Porto Alegre para custear resgates.",animais:"caes,gatos",instagram:"@101viralatas",chave_pix:"101viralatas@gmail.com",verificada:false,site:""},
+  {nome:"Canto da Terra",cidade:"São Paulo",estado:"SP",missao:"Atuar na cura de animais e da sociedade com adoções responsáveis e cuidado integral.",descricao:"Todos os animais são castrados, vacinados, desverminados e microchipados. Processo rigoroso de entrevista com futuros tutores para garantir adoção responsável.",animais:"caes,gatos",instagram:"@ongcantodaterra",chave_pix:"24.807.320/0001-16",verificada:true,site:"https://ongcantodaterra.org"},
+  {nome:"AMPARA Silvestres",cidade:"São Paulo",estado:"SP",missao:"Salvar espécies ameaçadas apoiando projetos de reintrodução ao habitat natural.",descricao:"Braço do Instituto Ampara Animal focado em animais silvestres. Iniciado em 2016, trabalha com espécies ameaçadas, projetos de reintrodução e animais em cativeiro.",animais:"silvestres",instagram:"@amparasilvestres",chave_pix:"institutoamparanimal.org.br",verificada:true,site:"https://institutoamparanimal.org.br"},
+  {nome:"Amigos de São Francisco",cidade:"Ibiúna",estado:"SP",missao:"Abrigar e promover a adoção de cães e gatos resgatados com feiras frequentes na capital.",descricao:"Abrigo em Ibiúna (interior de SP). Realiza feiras de adoção constantemente em São Paulo capital. Cuida de cães e gatos com dedicação até encontrarem um lar.",animais:"caes,gatos",instagram:"@amigosdesaofrancisco",chave_pix:"amigossaofrancisco@gmail.com",verificada:false,site:""}
+];
+
+const EMJ = {caes:'🐶',gatos:'🐱',silvestres:'🦜',cavalos:'🐴'};
+const GR = ['g1','g2','g3','g4','g5','g6'];
+let allONGs = [];
+
+async function seed() {
+  const { data } = await db.from('ongs').select('id').limit(1);
+  if (data && data.length > 0) return;
+  await db.from('ongs').insert(ONGS_SEED);
+}
+
+async function loadONGs() {
+  await seed();
+  const { data, error } = await db.from('ongs').select('*').order('verificada',{ascending:false}).order('nome');
+  if (error || !data) return ONGS_SEED.map((o,i)=>({...o,id:i+1}));
+  return data;
+}
+
+function emoji(animais) {
+  const a = (animais||'').split(',')[0];
+  return EMJ[a] || '🐾';
+}
+
+function card(o, i) {
+  const aArr = (o.animais||'').split(',').filter(Boolean);
+  const tags = aArr.slice(0,2).map((a,j)=>`<span class="ctag ${j>0?'or':''}">${EMJ[a]||'🐾'} ${a}</span>`).join('');
+  const oStr = JSON.stringify(o).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  return `<div class="ong-card" onclick='verPerfil(${JSON.stringify(JSON.stringify(o))})'>
+    <div class="card-img-wrap">
+      <div class="card-img ${GR[i%6]}">${emoji(o.animais)}</div>
+      ${o.verificada?'<div class="card-badge">✅ Verificada</div>':''}
+    </div>
+    <div class="card-body">
+      <div class="card-name">${o.nome}${o.verificada?'<span class="vbadge">✓</span>':''}</div>
+      <div class="card-loc">📍 ${o.cidade||''}, ${o.estado||''}</div>
+      <p class="card-desc">${o.descricao||o.missao||''}</p>
+      <div class="card-tags">${tags}</div>
+      <div class="card-footer">
+        <button class="btn-d" onclick="event.stopPropagation();openDon('${(o.nome||'').replace(/'/g,"\\'")}','${(o.chave_pix||'').replace(/'/g,"\\'")}')">💛 Doar</button>
+        <button class="btn-p" onclick="event.stopPropagation();verPerfil(${JSON.stringify(JSON.stringify(o))})">Ver perfil</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function loadHome() {
+  allONGs = await loadONGs();
+  const dest = allONGs.filter(o=>o.verificada).slice(0,6);
+  document.getElementById('homeGrid').innerHTML = dest.length
+    ? `<div class="ong-grid">${dest.map((o,i)=>card(o,i)).join('')}</div>`
+    : '<p class="err">Nenhuma ONG encontrada.</p>';
+}
+
+function filtrar() {
+  const b = (document.getElementById('cBusca')?.value||'').toLowerCase();
+  const e = document.getElementById('fEst')?.value||'';
+  const a = document.getElementById('fAni')?.value||'';
+  const v = document.getElementById('fVer')?.value||'';
+  const f = allONGs.filter(o=>{
+    if(b && !o.nome?.toLowerCase().includes(b) && !o.cidade?.toLowerCase().includes(b)) return false;
+    if(e && o.estado!==e) return false;
+    if(a && !(o.animais||'').includes(a)) return false;
+    if(v==='1' && !o.verificada) return false;
+    return true;
+  });
+  document.getElementById('fCount').textContent = `${f.length} ONG${f.length!==1?'s':''} encontrada${f.length!==1?'s':''}`;
+  document.getElementById('catGrid').innerHTML = f.length
+    ? f.map((o,i)=>card(o,i)).join('')
+    : '<p class="err">Nenhuma ONG com esses filtros. Tente outros critérios.</p>';
+}
+
+async function loadCatalog() {
+  if (!allONGs.length) {
+    document.getElementById('catGrid').innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Carregando ONGs...</p></div>';
+    allONGs = await loadONGs();
+  }
+  filtrar();
+}
+
+function verPerfil(jsonStr) {
+  const o = JSON.parse(jsonStr);
+  const aArr = (o.animais||'').split(',').filter(Boolean);
+  document.getElementById('profContent').innerHTML = `
+    <div class="p-top">
+      <div class="p-avatar">${emoji(o.animais)}</div>
+      <div>
+        <div class="p-name">${o.nome}${o.verificada?'<span class="vbadge">✓</span>':'<span style="font-size:.75rem;background:#FFF3CD;color:#856404;border-radius:4px;padding:2px 8px;font-weight:600">Aguardando verificação</span>'}</div>
+        <div class="p-loc">📍 ${o.cidade||''}, ${o.estado||''}</div>
+        <div>${aArr.map(a=>`<span class="ctag" style="margin:2px">${EMJ[a]||'🐾'} ${a}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="p-sec"><h4>Nossa Missão</h4><p>${o.missao||'Informação não disponível.'}</p></div>
+    ${o.descricao?`<div class="p-sec"><h4>Sobre o trabalho</h4><p>${o.descricao}</p></div>`:''}
+    ${o.chave_pix?`<div class="p-sec"><h4>💛 Chave PIX para doações</h4><div class="pix-box"><div style="font-size:.75rem;color:var(--tl);margin-bottom:4px">Chave PIX</div><div class="pix-key">${o.chave_pix}</div></div></div>`:''}
+    <div class="p-sec"><h4>Contato</h4>
+      ${o.instagram?`<p>📱 <strong>${o.instagram}</strong></p>`:''}
+      ${o.site?`<p style="margin-top:8px"><a href="${o.site}" target="_blank" class="ext-link">🌐 Visitar site oficial →</a></p>`:''}
+    </div>
+    <div class="p-actions">
+      ${o.chave_pix?`<button class="btn-pix" onclick="closeModal('profModal');openDon('${(o.nome||'').replace(/'/g,"\\'")}','${(o.chave_pix||'').replace(/'/g,"\\'")}')">💛 Fazer doação (PIX)</button>`:''}
+      ${o.instagram?`<button class="btn-cont" onclick="window.open('https://instagram.com/${(o.instagram||'').replace('@','')}','_blank')">📱 Instagram</button>`:''}
+      ${o.site?`<button class="btn-cont" onclick="window.open('${o.site}','_blank')">🌐 Site</button>`:''}
+    </div>`;
+  openModal('profModal');
+}
+
+function openDon(nome, pix) {
+  document.getElementById('donNome').textContent = nome;
+  document.getElementById('donPix').textContent = pix||'Consulte o Instagram da ONG';
+  openModal('donModal');
+}
+function copyPix() {
+  navigator.clipboard.writeText(document.getElementById('donPix').textContent)
+    .then(()=>alert('✅ Chave PIX copiada! Abra o app do banco e cole.'));
+}
+
+async function cadastrar() {
+  const nome=document.getElementById('fn').value.trim(),cnpj=document.getElementById('fc').value.trim(),
+    email=document.getElementById('fe').value.trim(),estado=document.getElementById('fst').value,
+    cidade=document.getElementById('fci').value.trim(),missao=document.getElementById('fm').value.trim();
+  if(!nome||!cnpj||!email||!estado||!cidade||!missao){alert('⚠️ Preencha todos os campos obrigatórios (*)');return;}
+  const animais = Array.from(document.querySelectorAll('.ani-check input:checked')).map(c=>c.value).join(',');
+  const {error} = await db.from('ongs').insert({nome,cnpj,email,estado,cidade,missao,
+    descricao:document.getElementById('fd').value.trim(),
+    animais:animais||'caes',chave_pix:document.getElementById('fp').value.trim(),
+    instagram:document.getElementById('fi').value.trim(),site:document.getElementById('fs').value.trim(),verificada:false});
+  closeModal('regModal');
+  if(error) alert('❌ Erro: '+error.message);
+  else { alert('✅ ONG cadastrada!\n\nVamos verificar e entrar em contato em até 5 dias.'); allONGs=[]; }
+}
+
+function showPage(p) {
+  document.getElementById('homePage').classList.toggle('hidden', p!=='home');
+  document.getElementById('catalogPage').style.display = p==='catalog'?'block':'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(p==='catalog') loadCatalog();
+}
+function buscarHero() {
+  const b=document.getElementById('hBusca').value, e=document.getElementById('hEstado').value;
+  showPage('catalog');
+  setTimeout(()=>{if(b)document.getElementById('cBusca').value=b;if(e)document.getElementById('fEst').value=e;filtrar();},100);
+}
+function irFiltro(ani='',est='',ver=false) {
+  showPage('catalog');
+  setTimeout(()=>{
+    if(ani)document.getElementById('fAni').value=ani;
+    if(est)document.getElementById('fEst').value=est;
+    if(ver)document.getElementById('fVer').value='1';
+    filtrar();
+  },100);
+}
+function openModal(id){document.getElementById(id).classList.add('active')}
+function closeModal(id){document.getElementById(id).classList.remove('active')}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('active')}));
+
+const obs = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.15});
+document.addEventListener('DOMContentLoaded',()=>{
+  loadHome();
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+});
+</script>
+</body>
+</html>
