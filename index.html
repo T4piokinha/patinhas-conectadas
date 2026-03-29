@@ -228,10 +228,10 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
 
   <section class="featured">
     <div class="feat-hdr">
-      <div><div class="sec-label">ONGs reais do Brasil</div><h2 class="sec-title">Instituições que precisam<br>de você agora</h2></div>
+      <div><div class="sec-label">ONGs Brasileiras Cadastradas</div><h2 class="sec-title">Instituições que precisam<br>de você agora</h2></div>
       <a class="see-all" onclick="showPage('catalog')">Ver todas →</a>
     </div>
-    <div id="homeGrid"><div class="ong-grid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Buscando ONGs reais do Brasil...</p></div></div></div>
+    <div id="homeGrid"><div class="ong-grid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Buscando ONGs cadastradas...</p></div></div></div>
   </section>
 
   <section class="data-banner">
@@ -265,12 +265,21 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
 
 <!-- CATÁLOGO -->
 <div id="catalogPage" class="page cat-page hidden">
-  <div class="cat-hero"><h1>Encontre sua causa 🐾</h1><p>ONGs reais do Brasil — use os filtros para encontrar quem precisa da sua ajuda</p></div>
+  <div class="cat-hero"><h1>Encontre sua causa 🐾</h1><p>ONGs Brasileiras Cadastradas — use os filtros para encontrar quem precisa da sua ajuda</p></div>
   <div class="filters">
     <input type="text" class="sinput" id="cBusca" placeholder="🔍 Buscar por nome..." oninput="filtrar()">
     <select class="fsel" id="fEst" onchange="filtrar()"><option value="">📍 Estado</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select>
     <select class="fsel" id="fAni" onchange="filtrar()"><option value="">🐾 Animais</option><option value="caes">🐶 Cães</option><option value="gatos">🐱 Gatos</option><option value="silvestres">🦜 Silvestres</option></select>
     <select class="fsel" id="fVer" onchange="filtrar()"><option value="">🔍 Todas</option><option value="1">✅ Verificadas</option></select>
+    <select class="fsel" id="fNec" onchange="filtrar()">
+      <option value="">🚨 Necessidades</option>
+      <option value="racao">🥣 Ração</option>
+      <option value="medicamentos">💊 Medicamentos</option>
+      <option value="castracao">✂️ Castração</option>
+      <option value="veterinario">🏥 Veterinário</option>
+      <option value="voluntarios">🤝 Voluntários</option>
+      <option value="caminhas">🛏️ Caminhas</option>
+    </select>
     <span class="fcount" id="fCount">Carregando...</span>
   </div>
   <div style="padding:40px 5%"><div class="ong-grid" id="catGrid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Carregando...</p></div></div></div>
@@ -318,6 +327,16 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
           <label class="ani-check"><input type="checkbox" value="gatos"> 🐱 Gatos</label>
           <label class="ani-check"><input type="checkbox" value="silvestres"> 🦜 Silvestres</label>
           <label class="ani-check"><input type="checkbox" value="cavalos"> 🐴 Grandes animais</label>
+        </div>
+      </div>
+      <div class="fg full"><label>Necessidades urgentes <span style="color:var(--tl);font-weight:400">(opcional — selecione o que a ONG precisa agora)</span></label>
+        <div class="ani-checks">
+          <label class="ani-check"><input type="checkbox" value="racao"> 🥣 Ração</label>
+          <label class="ani-check"><input type="checkbox" value="medicamentos"> 💊 Medicamentos</label>
+          <label class="ani-check"><input type="checkbox" value="castracao"> ✂️ Castração</label>
+          <label class="ani-check"><input type="checkbox" value="veterinario"> 🏥 Veterinário</label>
+          <label class="ani-check"><input type="checkbox" value="voluntarios"> 🤝 Voluntários</label>
+          <label class="ani-check"><input type="checkbox" value="caminhas"> 🛏️ Caminhas</label>
         </div>
       </div>
       <div class="fg full"><label>Chave PIX</label><input type="text" id="fp" placeholder="CNPJ, e-mail ou chave aleatória"></div>
@@ -405,6 +424,15 @@ function card(o, i) {
       <div class="card-loc">📍 ${o.cidade||''}, ${o.estado||''}</div>
       <p class="card-desc">${o.descricao||o.missao||''}</p>
       <div class="card-tags">${tags}</div>
+      ${(o.necessidades&&o.necessidades.trim())
+        ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">
+            <span style="font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;width:100%">🚨 Precisa agora:</span>
+            ${o.necessidades.split(',').map(n=>({
+              racao:'🥣 Ração',medicamentos:'💊 Medicamentos',castracao:'✂️ Castração',
+              veterinario:'🏥 Veterinário',voluntarios:'🤝 Voluntários',caminhas:'🛏️ Caminhas'
+            }[n]||n)).map(l=>`<span style="background:var(--op);color:var(--orange);border-radius:50px;padding:3px 10px;font-size:.72rem;font-weight:600">${l}</span>`).join('')}
+          </div>`
+        : ''}
       <div class="card-footer">
         <button class="btn-d" onclick="event.stopPropagation();openDon('${(o.nome||'').replace(/'/g,"\\'")}','${(o.chave_pix||'').replace(/'/g,"\\'")}')">💛 Doar</button>
         <button class="btn-p" onclick="event.stopPropagation();verPerfil(${JSON.stringify(JSON.stringify(o))})">Ver perfil</button>
@@ -431,6 +459,8 @@ function filtrar() {
     if(e && o.estado!==e) return false;
     if(a && !(o.animais||'').includes(a)) return false;
     if(v==='1' && !o.verificada) return false;
+    const nec = document.getElementById('fNec')?.value||'';
+    if(nec && !(o.necessidades||'').includes(nec)) return false;
     return true;
   });
   document.getElementById('fCount').textContent = `${f.length} ONG${f.length!==1?'s':''} encontrada${f.length!==1?'s':''}`;
@@ -463,6 +493,17 @@ function verPerfil(jsonStr) {
     </div>
     <div class="p-sec"><h4>Nossa Missão</h4><p>${o.missao||'Informação não disponível.'}</p></div>
     ${o.descricao?`<div class="p-sec"><h4>Sobre o trabalho</h4><p>${o.descricao}</p></div>`:''}
+    ${(o.necessidades&&o.necessidades.trim())
+      ? `<div class="p-sec">
+          <h4>🚨 Necessidades urgentes</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+            ${o.necessidades.split(',').map(n=>({
+              racao:'🥣 Ração',medicamentos:'💊 Medicamentos',castracao:'✂️ Castração',
+              veterinario:'🏥 Veterinário',voluntarios:'🤝 Voluntários',caminhas:'🛏️ Caminhas'
+            }[n]||n)).map(l=>`<span style="background:var(--op);color:var(--orange);border-radius:8px;padding:6px 14px;font-size:.85rem;font-weight:600">${l}</span>`).join('')}
+          </div>
+        </div>`
+      : ''}
     ${o.chave_pix?`<div class="p-sec"><h4>💛 Chave PIX para doações</h4><div class="pix-box"><div style="font-size:.75rem;color:var(--tl);margin-bottom:4px">Chave PIX</div><div class="pix-key">${o.chave_pix}</div></div></div>`:''}
     <div class="p-sec"><h4>Contato</h4>
       ${o.instagram?`<p>📱 Instagram: <strong>${o.instagram}</strong></p>`:''}
@@ -492,10 +533,13 @@ async function cadastrar() {
     email=document.getElementById('fe').value.trim(),estado=document.getElementById('fst').value,
     cidade=document.getElementById('fci').value.trim(),missao=document.getElementById('fm').value.trim();
   if(!nome||!email||!estado||!cidade||!missao){alert('⚠️ Preencha todos os campos obrigatórios (*)');return;}
-  const animais = Array.from(document.querySelectorAll('.ani-check input:checked')).map(c=>c.value).join(',');
+  const todosChecks = document.querySelectorAll('.ani-check input:checked');
+  const animaisVals = ['racao','medicamentos','castracao','veterinario','voluntarios','caminhas'];
+  const animais = Array.from(todosChecks).filter(c=>!animaisVals.includes(c.value)).map(c=>c.value).join(',');
+  const necessidades = Array.from(todosChecks).filter(c=>animaisVals.includes(c.value)).map(c=>c.value).join(',');
   const {error} = await db.from('ongs').insert({nome,cnpj,email,estado,cidade,missao,
     descricao:document.getElementById('fd').value.trim(),
-    animais:animais||'caes',chave_pix:document.getElementById('fp').value.trim(),
+    animais:animais||'caes',necessidades:necessidades||null,chave_pix:document.getElementById('fp').value.trim(),
     instagram:document.getElementById('fi').value.trim(),site:document.getElementById('fs').value.trim(),
     foto_url:document.getElementById('ff').value.trim()||null,
     verificada:false});
