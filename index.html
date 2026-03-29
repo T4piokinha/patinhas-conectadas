@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patinhas Conectadas — ONGs reais do Brasil</title>
+<title>Patinhas Conectadas</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -305,7 +305,7 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
     <p class="form-sub">Preencha com atenção. Nossa equipe verificará os dados em até 5 dias úteis.</p>
     <div class="form-grid">
       <div class="fg"><label>Nome da ONG *</label><input type="text" id="fn" placeholder="Ex: Instituto Amigos de Patas"></div>
-      <div class="fg"><label>CNPJ *</label><input type="text" id="fc" placeholder="00.000.000/0000-00"></div>
+      <div class="fg"><label>CNPJ</label><input type="text" id="fc" placeholder="00.000.000/0000-00"></div>
       <div class="fg"><label>E-mail *</label><input type="email" id="fe" placeholder="contato@suaong.org.br"></div>
       <div class="fg"><label>WhatsApp</label><input type="text" id="ft" placeholder="(11) 99999-9999"></div>
       <div class="fg"><label>Estado *</label><select id="fst"><option value="">Selecione...</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select></div>
@@ -321,6 +321,10 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
         </div>
       </div>
       <div class="fg full"><label>Chave PIX</label><input type="text" id="fp" placeholder="CNPJ, e-mail ou chave aleatória"></div>
+      <div class="fg full"><label>Foto da ONG (link de imagem)</label>
+        <input type="text" id="ff" placeholder="https://suaong.org.br/foto.jpg ou link do Google Drive">
+        <small style="color:var(--tl);font-size:.78rem;margin-top:4px">Cole um link direto de imagem (JPG, PNG). Dica: suba no <a href="https://imgbb.com" target="_blank" style="color:var(--green)">imgbb.com</a> gratuitamente.</small>
+      </div>
       <div class="fg"><label>Instagram</label><input type="text" id="fi" placeholder="@suaong"></div>
       <div class="fg"><label>Site oficial</label><input type="text" id="fs" placeholder="https://suaong.org.br"></div>
     </div>
@@ -391,7 +395,9 @@ function card(o, i) {
   const oStr = JSON.stringify(o).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
   return `<div class="ong-card" onclick='verPerfil(${JSON.stringify(JSON.stringify(o))})'>
     <div class="card-img-wrap">
-      <div class="card-img ${GR[i%6]}">${emoji(o.animais)}</div>
+      ${o.foto_url
+        ? `<img src="${o.foto_url}" style="height:175px;width:100%;object-fit:cover;display:block" onerror="this.parentElement.innerHTML='<div class=\\'card-img ${GR[i%6]}\\'>${emoji(o.animais)}</div>'">`
+        : `<div class="card-img ${GR[i%6]}">${emoji(o.animais)}</div>`}
       ${o.verificada?'<div class="card-badge">✅ Verificada</div>':''}
     </div>
     <div class="card-body">
@@ -482,12 +488,14 @@ async function cadastrar() {
   const nome=document.getElementById('fn').value.trim(),cnpj=document.getElementById('fc').value.trim(),
     email=document.getElementById('fe').value.trim(),estado=document.getElementById('fst').value,
     cidade=document.getElementById('fci').value.trim(),missao=document.getElementById('fm').value.trim();
-  if(!nome||!cnpj||!email||!estado||!cidade||!missao){alert('⚠️ Preencha todos os campos obrigatórios (*)');return;}
+  if(!nome||!email||!estado||!cidade||!missao){alert('⚠️ Preencha todos os campos obrigatórios (*)');return;}
   const animais = Array.from(document.querySelectorAll('.ani-check input:checked')).map(c=>c.value).join(',');
   const {error} = await db.from('ongs').insert({nome,cnpj,email,estado,cidade,missao,
     descricao:document.getElementById('fd').value.trim(),
     animais:animais||'caes',chave_pix:document.getElementById('fp').value.trim(),
-    instagram:document.getElementById('fi').value.trim(),site:document.getElementById('fs').value.trim(),verificada:false});
+    instagram:document.getElementById('fi').value.trim(),site:document.getElementById('fs').value.trim(),
+    foto_url:document.getElementById('ff').value.trim()||null,
+    verificada:false});
   closeModal('regModal');
   if(error) alert('❌ Erro: '+error.message);
   else { alert('✅ ONG cadastrada!\n\nVamos verificar e entrar em contato em até 5 dias.'); allONGs=[]; }
