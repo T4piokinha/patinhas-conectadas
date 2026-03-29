@@ -452,7 +452,9 @@ function verPerfil(jsonStr) {
   const aArr = (o.animais||'').split(',').filter(Boolean);
   document.getElementById('profContent').innerHTML = `
     <div class="p-top">
-      <div class="p-avatar">${emoji(o.animais)}</div>
+      ${o.foto_url
+        ? `<img src="${o.foto_url}" style="width:80px;height:80px;border-radius:16px;object-fit:cover;flex-shrink:0" onerror="this.outerHTML='<div class=\\'p-avatar\\'>${emoji(o.animais)}</div>'">`
+        : `<div class="p-avatar">${emoji(o.animais)}</div>`}
       <div>
         <div class="p-name">${o.nome}${o.verificada?'<span class="vbadge">✓</span>':'<span style="font-size:.75rem;background:#FFF3CD;color:#856404;border-radius:4px;padding:2px 8px;font-weight:600">Aguardando verificação</span>'}</div>
         <div class="p-loc">📍 ${o.cidade||''}, ${o.estado||''}</div>
@@ -463,7 +465,8 @@ function verPerfil(jsonStr) {
     ${o.descricao?`<div class="p-sec"><h4>Sobre o trabalho</h4><p>${o.descricao}</p></div>`:''}
     ${o.chave_pix?`<div class="p-sec"><h4>💛 Chave PIX para doações</h4><div class="pix-box"><div style="font-size:.75rem;color:var(--tl);margin-bottom:4px">Chave PIX</div><div class="pix-key">${o.chave_pix}</div></div></div>`:''}
     <div class="p-sec"><h4>Contato</h4>
-      ${o.instagram?`<p>📱 <strong>${o.instagram}</strong></p>`:''}
+      ${o.instagram?`<p>📱 Instagram: <strong>${o.instagram}</strong></p>`:''}
+      ${o.email?`<p style="margin-top:8px">📧 E-mail: <a href="mailto:${o.email}" style="color:var(--green);font-weight:600">${o.email}</a></p>`:''}
       ${o.site?`<p style="margin-top:8px"><a href="${o.site}" target="_blank" class="ext-link">🌐 Visitar site oficial →</a></p>`:''}
     </div>
     <div class="p-actions">
