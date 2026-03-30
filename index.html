@@ -171,8 +171,81 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
 .reveal{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .page.hidden{display:none}
-@media(max-width:768px){.how-grid,.data-grid{grid-template-columns:1fr}.ftgrid{grid-template-columns:1fr 1fr}.nav-links{display:none}.hero-stats{gap:20px;flex-wrap:wrap}.hero-blob{display:none}.form-grid{grid-template-columns:1fr}.feat-hdr{flex-direction:column;align-items:flex-start;gap:12px}.p-actions{flex-direction:column}.hero-search{flex-direction:column}.hero-search select{border-right:none;border-bottom:1px solid var(--border)}}
-@media(max-width:480px){.ftgrid{grid-template-columns:1fr}.data-grid{grid-template-columns:1fr 1fr}}
+
+/* ── TABLET (≤ 900px) ── */
+@media(max-width:900px){
+  .how-grid{grid-template-columns:1fr 1fr}
+  .data-grid{grid-template-columns:1fr 1fr}
+  .ftgrid{grid-template-columns:1fr 1fr}
+  .feat-hdr{flex-direction:column;align-items:flex-start;gap:12px}
+}
+
+/* ── MOBILE (≤ 640px) ── */
+@media(max-width:640px){
+  /* Nav */
+  nav{padding:0 4%}
+  .nav-links{display:none}
+  .nav-cta{padding:9px 16px;font-size:.82rem}
+
+  /* Hero */
+  .hero{padding:88px 4% 140px;min-height:100svh}
+  .hero-blob{display:none}
+  .hero-badge{font-size:.75rem;padding:5px 12px}
+  .hero-title{font-size:2rem}
+  .hero-sub{font-size:.95rem}
+  .hero-search{flex-direction:column;border-radius:14px}
+  .hero-search select{border-right:none;border-bottom:1px solid var(--border);border-radius:0;width:100%}
+  .hero-search input{width:100%;padding:14px 16px}
+  .hero-search-btn{border-radius:0 0 14px 14px;padding:14px;text-align:center}
+  .hero-tags{gap:8px}
+  .hero-tag{font-size:.78rem;padding:5px 12px}
+  .hero-stats{bottom:20px;gap:12px;flex-wrap:wrap}
+  .stat-num{font-size:1.4rem}
+  .stat-label{font-size:.72rem}
+
+  /* Sections */
+  .section{padding:52px 4%}
+  .featured{padding:52px 4%}
+  .sec-title{font-size:1.6rem}
+  .how-grid{grid-template-columns:1fr;gap:16px}
+  .how-card{padding:28px 24px}
+
+  /* Cards */
+  .ong-grid{grid-template-columns:1fr !important}
+  .card-img{height:160px}
+
+  /* Data banner */
+  .data-banner{padding:48px 4%}
+  .data-grid{grid-template-columns:1fr 1fr;gap:14px}
+  .dnum{font-size:1.6rem}
+
+  /* Urgent */
+  .urgent-sec{padding:48px 4%}
+  .urg-chips{gap:8px}
+  .uchip{padding:8px 14px;font-size:.82rem}
+  .urg-cta{padding:14px 28px;font-size:.9rem}
+
+  /* Catalog */
+  .cat-hero{padding:36px 4%}
+  .cat-hero h1{font-size:1.5rem}
+  .filters{padding:14px 4%;gap:10px;top:68px}
+  .fsel,.sinput{font-size:.82rem;padding:9px 12px;width:100%}
+  .fcount{width:100%;margin-left:0;text-align:center}
+  #catGrid{padding:20px 4%}
+
+  /* Modals */
+  .modal{padding:28px 20px;border-radius:20px 20px 0 0;max-height:92vh;position:fixed;bottom:0;left:0;right:0;width:100%;transform:translateY(100%)}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-overlay.active .modal{transform:translateY(0)}
+  .form-grid{grid-template-columns:1fr}
+  .p-actions{flex-direction:column}
+  .btn-pix,.btn-cont{min-width:unset;width:100%}
+
+  /* Footer */
+  .ftgrid{grid-template-columns:1fr;gap:28px}
+  .ft-bot{flex-direction:column;gap:8px;text-align:center}
+  footer{padding:44px 4% 32px}
+}
 </style>
 </head>
 <body>
@@ -203,6 +276,7 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
       <div class="hero-tags">
         <span class="hero-tag" onclick="irFiltro('caes')">🐶 Cães</span>
         <span class="hero-tag" onclick="irFiltro('gatos')">🐱 Gatos</span>
+        <span class="hero-tag" onclick="irFiltro('cavalos')">🐴 Grandes animais</span>
         <span class="hero-tag" onclick="irFiltro('silvestres')">🦜 Silvestres</span>
         <span class="hero-tag" onclick="irFiltro('','',true)">✅ Verificadas</span>
       </div>
@@ -231,7 +305,7 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
       <div><div class="sec-label">ONGs Brasileiras Cadastradas</div><h2 class="sec-title">Instituições que precisam<br>de você agora</h2></div>
       <a class="see-all" onclick="showPage('catalog')">Ver todas →</a>
     </div>
-    <div id="homeGrid"><div class="ong-grid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Buscando ONGs cadastradas...</p></div></div></div>
+    <div id="homeGrid"><div class="ong-grid"><div class="loading-wrap"><div class="spinner"></div><p class="loading-text">Buscando ONGs brasileiras cadastradas...</p></div></div></div>
   </section>
 
   <section class="data-banner">
@@ -265,11 +339,11 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
 
 <!-- CATÁLOGO -->
 <div id="catalogPage" class="page cat-page hidden">
-  <div class="cat-hero"><h1>Encontre sua causa 🐾</h1><p>ONGs Brasileiras Cadastradas — use os filtros para encontrar quem precisa da sua ajuda</p></div>
+  <div class="cat-hero"><h1>Encontre sua causa 🐾</h1><p>ONGs cadastradas — use os filtros para encontrar quem precisa da sua ajuda</p></div>
   <div class="filters">
     <input type="text" class="sinput" id="cBusca" placeholder="🔍 Buscar por nome..." oninput="filtrar()">
     <select class="fsel" id="fEst" onchange="filtrar()"><option value="">📍 Estado</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select>
-    <select class="fsel" id="fAni" onchange="filtrar()"><option value="">🐾 Animais</option><option value="caes">🐶 Cães</option><option value="gatos">🐱 Gatos</option><option value="silvestres">🦜 Silvestres</option></select>
+    <select class="fsel" id="fAni" onchange="filtrar()"><option value="">🐾 Animais</option><option value="caes">🐶 Cães</option><option value="gatos">🐱 Gatos</option><option value="cavalos">🐴 Grandes animais</option><option value="silvestres">🦜 Silvestres</option></select>
     <select class="fsel" id="fVer" onchange="filtrar()"><option value="">🔍 Todas</option><option value="1">✅ Verificadas</option></select>
     <select class="fsel" id="fNec" onchange="filtrar()">
       <option value="">🚨 Necessidades</option>
@@ -314,8 +388,8 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
     <p class="form-sub">Preencha com atenção. Nossa equipe verificará os dados em até 5 dias úteis.</p>
     <div class="form-grid">
       <div class="fg"><label>Nome da ONG *</label><input type="text" id="fn" placeholder="Ex: Instituto Amigos de Patas"></div>
-      <div class="fg"><label>CNPJ</label><input type="text" id="fc" placeholder="00.000.000/0000-00"></div>
-      <div class="fg"><label>E-mail *</label><input type="email" id="fe" placeholder="contato@suaong.org.br"></div>
+      <div class="fg"><label>CNPJ *</label><input type="text" id="fc" placeholder="00.000.000/0000-00"></div>
+      <div class="fg"><label>E-mail</label><input type="email" id="fe" placeholder="contato@suaong.org.br"></div>
       <div class="fg"><label>WhatsApp</label><input type="text" id="ft" placeholder="(11) 99999-9999"></div>
       <div class="fg"><label>Estado *</label><select id="fst"><option value="">Selecione...</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option><option>SC</option><option>RS</option><option>DF</option><option>GO</option></select></div>
       <div class="fg"><label>Cidade *</label><input type="text" id="fci" placeholder="Ex: São Paulo"></div>
@@ -325,8 +399,8 @@ footer{background:var(--td);color:rgba(255,255,255,.75);padding:60px 5% 40px}
         <div class="ani-checks">
           <label class="ani-check"><input type="checkbox" value="caes"> 🐶 Cães</label>
           <label class="ani-check"><input type="checkbox" value="gatos"> 🐱 Gatos</label>
-          <label class="ani-check"><input type="checkbox" value="silvestres"> 🦜 Silvestres</label>
           <label class="ani-check"><input type="checkbox" value="cavalos"> 🐴 Grandes animais</label>
+          <label class="ani-check"><input type="checkbox" value="silvestres"> 🦜 Silvestres</label>
         </div>
       </div>
       <div class="fg full"><label>Necessidades urgentes <span style="color:var(--tl);font-weight:400">(opcional — selecione o que a ONG precisa agora)</span></label>
@@ -411,12 +485,19 @@ function emoji(animais) {
 function card(o, i) {
   const aArr = (o.animais||'').split(',').filter(Boolean);
   const tags = aArr.slice(0,2).map((a,j)=>`<span class="ctag ${j>0?'or':''}">${EMJ[a]||'🐾'} ${a}</span>`).join('');
-  const oStr = JSON.stringify(o).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+  const necMap = {racao:'🥣 Ração',medicamentos:'💊 Medicamentos',castracao:'✂️ Castração',veterinario:'🏥 Veterinário',voluntarios:'🤝 Voluntários',caminhas:'🛏️ Caminhas'};
+  const necHTML = (o.necessidades&&o.necessidades.trim())
+    ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">
+        <span style="font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;width:100%">🚨 Precisa agora:</span>
+        ${o.necessidades.split(',').map(n=>necMap[n]||n).map(l=>`<span style="background:var(--op);color:var(--orange);border-radius:50px;padding:3px 10px;font-size:.72rem;font-weight:600">${l}</span>`).join('')}
+      </div>`
+    : '';
+  const imgHTML = o.foto_url
+    ? `<img src="${o.foto_url}" style="height:175px;width:100%;object-fit:cover;display:block" onerror="this.parentElement.innerHTML='<div class=\\'card-img ${GR[i%6]}\\'>${emoji(o.animais)}</div>'">`
+    : `<div class="card-img ${GR[i%6]}">${emoji(o.animais)}</div>`;
   return `<div class="ong-card" onclick='verPerfil(${JSON.stringify(JSON.stringify(o))})'>
     <div class="card-img-wrap">
-      ${o.foto_url
-        ? `<img src="${o.foto_url}" style="height:175px;width:100%;object-fit:cover;display:block" onerror="this.parentElement.innerHTML='<div class=\\'card-img ${GR[i%6]}\\'>${emoji(o.animais)}</div>'">`
-        : `<div class="card-img ${GR[i%6]}">${emoji(o.animais)}</div>`}
+      ${imgHTML}
       ${o.verificada?'<div class="card-badge">✅ Verificada</div>':''}
     </div>
     <div class="card-body">
@@ -424,15 +505,7 @@ function card(o, i) {
       <div class="card-loc">📍 ${o.cidade||''}, ${o.estado||''}</div>
       <p class="card-desc">${o.descricao||o.missao||''}</p>
       <div class="card-tags">${tags}</div>
-      ${(o.necessidades&&o.necessidades.trim())
-        ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">
-            <span style="font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;width:100%">🚨 Precisa agora:</span>
-            ${o.necessidades.split(',').map(n=>({
-              racao:'🥣 Ração',medicamentos:'💊 Medicamentos',castracao:'✂️ Castração',
-              veterinario:'🏥 Veterinário',voluntarios:'🤝 Voluntários',caminhas:'🛏️ Caminhas'
-            }[n]||n)).map(l=>`<span style="background:var(--op);color:var(--orange);border-radius:50px;padding:3px 10px;font-size:.72rem;font-weight:600">${l}</span>`).join('')}
-          </div>`
-        : ''}
+      ${necHTML}
       <div class="card-footer">
         <button class="btn-d" onclick="event.stopPropagation();openDon('${(o.nome||'').replace(/'/g,"\\'")}','${(o.chave_pix||'').replace(/'/g,"\\'")}')">💛 Doar</button>
         <button class="btn-p" onclick="event.stopPropagation();verPerfil(${JSON.stringify(JSON.stringify(o))})">Ver perfil</button>
@@ -454,12 +527,12 @@ function filtrar() {
   const e = document.getElementById('fEst')?.value||'';
   const a = document.getElementById('fAni')?.value||'';
   const v = document.getElementById('fVer')?.value||'';
+  const nec = document.getElementById('fNec')?.value||'';
   const f = allONGs.filter(o=>{
     if(b && !o.nome?.toLowerCase().includes(b) && !o.cidade?.toLowerCase().includes(b)) return false;
     if(e && o.estado!==e) return false;
     if(a && !(o.animais||'').includes(a)) return false;
     if(v==='1' && !o.verificada) return false;
-    const nec = document.getElementById('fNec')?.value||'';
     if(nec && !(o.necessidades||'').includes(nec)) return false;
     return true;
   });
@@ -480,11 +553,13 @@ async function loadCatalog() {
 function verPerfil(jsonStr) {
   const o = JSON.parse(jsonStr);
   const aArr = (o.animais||'').split(',').filter(Boolean);
+  const necMap = {racao:'🥣 Ração',medicamentos:'💊 Medicamentos',castracao:'✂️ Castração',veterinario:'🏥 Veterinário',voluntarios:'🤝 Voluntários',caminhas:'🛏️ Caminhas'};
+  const avatarHTML = o.foto_url
+    ? `<img src="${o.foto_url}" style="width:80px;height:80px;border-radius:16px;object-fit:cover;flex-shrink:0" onerror="this.outerHTML='<div class=\\'p-avatar\\'>${emoji(o.animais)}</div>'">`
+    : `<div class="p-avatar">${emoji(o.animais)}</div>`;
   document.getElementById('profContent').innerHTML = `
     <div class="p-top">
-      ${o.foto_url
-        ? `<img src="${o.foto_url}" style="width:80px;height:80px;border-radius:16px;object-fit:cover;flex-shrink:0" onerror="this.outerHTML='<div class=\\'p-avatar\\'>${emoji(o.animais)}</div>'">`
-        : `<div class="p-avatar">${emoji(o.animais)}</div>`}
+      ${avatarHTML}
       <div>
         <div class="p-name">${o.nome}${o.verificada?'<span class="vbadge">✓</span>':'<span style="font-size:.75rem;background:#FFF3CD;color:#856404;border-radius:4px;padding:2px 8px;font-weight:600">Aguardando verificação</span>'}</div>
         <div class="p-loc">📍 ${o.cidade||''}, ${o.estado||''}</div>
@@ -493,17 +568,12 @@ function verPerfil(jsonStr) {
     </div>
     <div class="p-sec"><h4>Nossa Missão</h4><p>${o.missao||'Informação não disponível.'}</p></div>
     ${o.descricao?`<div class="p-sec"><h4>Sobre o trabalho</h4><p>${o.descricao}</p></div>`:''}
-    ${(o.necessidades&&o.necessidades.trim())
-      ? `<div class="p-sec">
-          <h4>🚨 Necessidades urgentes</h4>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
-            ${o.necessidades.split(',').map(n=>({
-              racao:'🥣 Ração',medicamentos:'💊 Medicamentos',castracao:'✂️ Castração',
-              veterinario:'🏥 Veterinário',voluntarios:'🤝 Voluntários',caminhas:'🛏️ Caminhas'
-            }[n]||n)).map(l=>`<span style="background:var(--op);color:var(--orange);border-radius:8px;padding:6px 14px;font-size:.85rem;font-weight:600">${l}</span>`).join('')}
-          </div>
-        </div>`
-      : ''}
+    ${(o.necessidades&&o.necessidades.trim())?`
+    <div class="p-sec"><h4>🚨 Necessidades urgentes</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+        ${o.necessidades.split(',').map(n=>necMap[n]||n).map(l=>`<span style="background:var(--op);color:var(--orange);border-radius:8px;padding:6px 14px;font-size:.85rem;font-weight:600">${l}</span>`).join('')}
+      </div>
+    </div>`:''}
     ${o.chave_pix?`<div class="p-sec"><h4>💛 Chave PIX para doações</h4><div class="pix-box"><div style="font-size:.75rem;color:var(--tl);margin-bottom:4px">Chave PIX</div><div class="pix-key">${o.chave_pix}</div></div></div>`:''}
     <div class="p-sec"><h4>Contato</h4>
       ${o.instagram?`<p>📱 Instagram: <strong>${o.instagram}</strong></p>`:''}
@@ -532,17 +602,22 @@ async function cadastrar() {
   const nome=document.getElementById('fn').value.trim(),cnpj=document.getElementById('fc').value.trim(),
     email=document.getElementById('fe').value.trim(),estado=document.getElementById('fst').value,
     cidade=document.getElementById('fci').value.trim(),missao=document.getElementById('fm').value.trim();
-  if(!nome||!email||!estado||!cidade||!missao){alert('⚠️ Preencha todos os campos obrigatórios (*)');return;}
-  const todosChecks = document.querySelectorAll('.ani-check input:checked');
-  const animaisVals = ['racao','medicamentos','castracao','veterinario','voluntarios','caminhas'];
-  const animais = Array.from(todosChecks).filter(c=>!animaisVals.includes(c.value)).map(c=>c.value).join(',');
-  const necessidades = Array.from(todosChecks).filter(c=>animaisVals.includes(c.value)).map(c=>c.value).join(',');
-  const {error} = await db.from('ongs').insert({nome,cnpj,email,estado,cidade,missao,
-    descricao:document.getElementById('fd').value.trim(),
-    animais:animais||'caes',necessidades:necessidades||null,chave_pix:document.getElementById('fp').value.trim(),
-    instagram:document.getElementById('fi').value.trim(),site:document.getElementById('fs').value.trim(),
-    foto_url:document.getElementById('ff').value.trim()||null,
-    verificada:false});
+  if(!nome||!estado||!cidade||!missao){alert('⚠️ Preencha todos os campos obrigatórios (*)');return;}
+  const necVals = ['racao','medicamentos','castracao','veterinario','voluntarios','caminhas'];
+  const todosChecks = Array.from(document.querySelectorAll('.ani-check input:checked'));
+  const animais = todosChecks.filter(c=>!necVals.includes(c.value)).map(c=>c.value).join(',');
+  const necessidades = todosChecks.filter(c=>necVals.includes(c.value)).map(c=>c.value).join(',');
+  const {error} = await db.from('ongs').insert({
+    nome, cnpj, email, estado, cidade, missao,
+    descricao: document.getElementById('fd').value.trim(),
+    animais: animais||'caes',
+    necessidades: necessidades||null,
+    chave_pix: document.getElementById('fp').value.trim(),
+    instagram: document.getElementById('fi').value.trim(),
+    site: document.getElementById('fs').value.trim(),
+    foto_url: document.getElementById('ff').value.trim()||null,
+    verificada: false
+  });
   closeModal('regModal');
   if(error) alert('❌ Erro: '+error.message);
   else { alert('✅ ONG cadastrada!\n\nVamos verificar e entrar em contato em até 5 dias.'); allONGs=[]; }
